@@ -6,11 +6,11 @@ class ConsumableWithImplementation extends Consumable {}
 
 describe("Consumable", () => {
   it("should not be spoiled", () => {
-    expect(new ConsumableWithImplementation("bread", 1, 1).isSpoileed()).toBeFalsy();
+    expect(new ConsumableWithImplementation("bread", 1, 1).isSpoiled()).toBeFalsy();
   });
 
   it("should be spoiled", () => {
-    expect(new ConsumableWithImplementation("bread", 1, 1, true).isSpoileed()).toBeTruthy();
+    expect(new ConsumableWithImplementation("bread", 1, 1, true).isSpoiled()).toBeTruthy();
   });
 
   describe("use()", () => {

@@ -2,12 +2,12 @@ import { Item } from "./Item";
 
 export class Consumable extends Item {
   public isConsumed: boolean;
-  private isSpoiled: boolean;
+  private _isSpoiled: boolean;
 
-  constructor(name: string, value: number, weight: number, isSpoiled: boolean = false) {
+  constructor(name: string, value: number, weight: number, _isSpoiled: boolean = false) {
     super(name, value, weight);
     this.isConsumed = false;
-    this.isSpoiled = isSpoiled;
+    this._isSpoiled = _isSpoiled;
   }
 
   use(): string {
@@ -17,7 +17,7 @@ export class Consumable extends Item {
       this.isConsumed = true;
       let result = `You consumed the ${this.name}.`;
 
-      if (this.isSpoiled) {
+      if (this._isSpoiled) {
         result += "\nYou feel sick.";
       }
 
@@ -25,7 +25,7 @@ export class Consumable extends Item {
     }
   }
 
-  isSpoileed(): boolean {
-    return this.isSpoiled;
+  isSpoiled(): boolean {
+    return this._isSpoiled;
   }
 }
