@@ -1,23 +1,31 @@
 import { Item } from "./Item";
+
 export class Consumable extends Item {
   public isConsumed: boolean;
   private isSpoiled: boolean;
 
-  constructor(name: string, value: number, weight: number, isSpoiled: boolean) {
+  constructor(name: string, value: number, weight: number, isSpoiled: boolean = false) {
     super(name, value, weight);
     this.isConsumed = false;
     this.isSpoiled = isSpoiled;
   }
 
-  use(): void {
+  use(): string {
     if (this.isConsumed) {
-      console.log(`There is nothing left of the ${this.name} to consume.`);
+      return `There's nothing left of the ${this.name} to consume.`;
     } else {
       this.isConsumed = true;
-      console.log(`You consumed the ${this.name}.`);
+      let result = `You consumed the ${this.name}.`;
+
       if (this.isSpoiled) {
-        console.log("You feel sick.");
+        result += "\nYou feel sick.";
       }
+
+      return result;
     }
+  }
+
+  isSpoileed(): boolean {
+    return this.isSpoiled;
   }
 }
