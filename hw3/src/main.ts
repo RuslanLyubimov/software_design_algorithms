@@ -2,17 +2,17 @@ import { Either, fromPromise, ap, right, left, getOrElse, flatten } from "./fp/e
 import { pipe } from "./fp/utils";
 import { fetchClient, fetchExecutor } from "./fetching";
 import { ClientUser, ExecutorUser, Demand } from "./types";
-import { Maybe, fromNullable, isNone } from "./fp/maybe";
+import { Maybe, none, some, isNone, fromNullable } from "./fp/maybe";
 
 type Response<R> = Promise<Either<string, R>>;
 
 const getExecutor = (): Response<ExecutorUser> => fromPromise(fetchExecutor());
-const getClients = (): Response<Array<ClientUser & { demands: Maybe<Array<Demand>> }>> =>
-  fromPromise(fetchClient()).then((response) =>
-    response.map((clients) =>
+export const getClients = (): Response<Array<ClientUser>> =>
+  fromPromise(
+    fetchClient().then((clients) =>
       clients.map((client) => ({
         ...client,
-        demands: fromNullable(client.demands),
+        demands: fromNullable(client.demands), // Use fromNullable to wrap demands in Maybe
       }))
     )
   );
@@ -49,7 +49,8 @@ const formatClient =
 const formatClients = (
   clients: Array<ClientUser & { demands: Maybe<Array<Demand>> }>,
   executor: ExecutorUser
-): string => clients.map(formatClient(executor)).join("\n");
+): string => clients.map(formatClient(executor)).join("\n") + "\n";
+// Add a newline character after each formatted client string
 
 export const show =
   (sortBy: SortBy) =>
@@ -67,11 +68,13 @@ export const show =
 
     const formattedClients = formatClients(sortedClients, executor);
 
-    return matchedClients.length === 0
-      ? left("This executor cannot meet the demands of any client!")
-      : right(
-          `This executor meets the demands of only ${sortedClients.length} out of ${totalClients} clients.\n\nAvailable clients sorted by ${sortBy}:\n${formattedClients}`
-        );
+    if (matchedClients.length === 0) {
+      return left("This executor cannot meet the demands of any client!");
+    }
+
+    return right(
+      `This executor meets the demands of only ${sortedClients.length} out of ${totalClients} clients.\n\nAvailable clients sorted by ${sortBy}:\n${formattedClients}`
+    );
   };
 
 export const main = (sortBy: SortBy): Promise<string> =>
