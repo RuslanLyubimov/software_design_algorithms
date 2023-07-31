@@ -37,6 +37,14 @@ export class Shipment {
     } else {
       this.shipper = new PacificParcelShipper();
     }
+
+    if (this.weight <= 15) {
+      this.shipmentItem = new Letter(this.weight);
+    } else if (this.weight <= 160) {
+      this.shipmentItem = new Package(this.weight);
+    } else {
+      this.shipmentItem = new Oversize(this.weight);
+    }
   }
 
   public updateShipmentInfo(
@@ -47,31 +55,43 @@ export class Shipment {
     toAddress: string,
     toZipCode: string
   ): void {
-    if (weight <= 15) {
-      this.shipmentItem = new Letter(weight);
-    } else if (weight <= 160) {
-      this.shipmentItem = new Package(weight);
-    } else {
-      this.shipmentItem = new Oversize(weight);
-    }
-
     this.shipmentID = shipmentID;
     this.weight = weight;
     this.fromAddress = fromAddress;
     this.fromZipCode = fromZipCode;
     this.toAddress = toAddress;
     this.toZipCode = toZipCode;
+    this.selectShipper(this.fromZipCode);
   }
 
   public getShipmentID(): number {
     return this.shipmentID;
   }
 
+  public getWeight(): number {
+    return this.weight;
+  }
+
+  public getFromAddress(): string {
+    return this.fromAddress;
+  }
+
+  public getFromZipCode(): string {
+    return this.fromZipCode;
+  }
+
+  public getToAddress(): string {
+    return this.toAddress;
+  }
+
+  public getToZipCode(): string {
+    return this.toZipCode;
+  }
+
   public ship(): string {
-    this.selectShipper(this.fromZipCode);
     const cost = this.shipmentItem.getCost();
-    return `Shipment ID: ${this.shipmentID}, From: ${this.fromAddress}, Zip: ${this.fromZipCode}, To: ${
-      this.toAddress
-    }, Zip: ${this.toZipCode}, Cost: $${cost.toFixed(2)}`;
+    return `Shipment with the ID ${this.shipmentID} will be picked up from ${this.fromAddress}, ${
+      this.fromZipCode
+    } and shipped to ${this.toAddress}, ${this.toZipCode}\nCost = $${cost.toFixed(2)}`;
   }
 }

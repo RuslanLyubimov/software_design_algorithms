@@ -1,8 +1,8 @@
 "use strict";
 exports.__esModule = true;
 exports.Client = void 0;
-// Client.ts
 var Step1_1 = require("./Step1");
+var Step4_1 = require("./Step4");
 var Client = /** @class */ (function () {
     function Client() {
         this.shipment = new Step1_1.Shipment(this.getShipmentID(), 0, "", "", "", "");
@@ -20,7 +20,11 @@ var Client = /** @class */ (function () {
         return this.shipment;
     };
     Client.prototype.ship = function (shipment) {
-        var shipmentInfo = shipment.ship();
+        var isFragile = true;
+        var doNotLeave = true;
+        var returnReceiptRequested = true;
+        var decoratedShipment = new Step4_1.ShipmentDecorator(shipment, isFragile, doNotLeave, returnReceiptRequested);
+        var shipmentInfo = decoratedShipment.ship();
         console.log(shipmentInfo);
     };
     return Client;

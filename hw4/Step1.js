@@ -23,31 +23,46 @@ var Shipment = /** @class */ (function () {
         else {
             this.shipper = new Step2_1.PacificParcelShipper();
         }
-    };
-    Shipment.prototype.updateShipmentInfo = function (shipmentID, weight, fromAddress, fromZipCode, toAddress, toZipCode) {
-        if (weight <= 15) {
-            this.shipmentItem = new Step3_1.Letter(weight);
+        if (this.weight <= 15) {
+            this.shipmentItem = new Step3_1.Letter(this.weight);
         }
-        else if (weight <= 160) {
-            this.shipmentItem = new Step3_1.Package(weight);
+        else if (this.weight <= 160) {
+            this.shipmentItem = new Step3_1.Package(this.weight);
         }
         else {
-            this.shipmentItem = new Step3_1.Oversize(weight);
+            this.shipmentItem = new Step3_1.Oversize(this.weight);
         }
+    };
+    Shipment.prototype.updateShipmentInfo = function (shipmentID, weight, fromAddress, fromZipCode, toAddress, toZipCode) {
         this.shipmentID = shipmentID;
         this.weight = weight;
         this.fromAddress = fromAddress;
         this.fromZipCode = fromZipCode;
         this.toAddress = toAddress;
         this.toZipCode = toZipCode;
+        this.selectShipper(this.fromZipCode);
     };
     Shipment.prototype.getShipmentID = function () {
         return this.shipmentID;
     };
+    Shipment.prototype.getWeight = function () {
+        return this.weight;
+    };
+    Shipment.prototype.getFromAddress = function () {
+        return this.fromAddress;
+    };
+    Shipment.prototype.getFromZipCode = function () {
+        return this.fromZipCode;
+    };
+    Shipment.prototype.getToAddress = function () {
+        return this.toAddress;
+    };
+    Shipment.prototype.getToZipCode = function () {
+        return this.toZipCode;
+    };
     Shipment.prototype.ship = function () {
-        this.selectShipper(this.fromZipCode);
         var cost = this.shipmentItem.getCost();
-        return "Shipment ID: ".concat(this.shipmentID, ", From: ").concat(this.fromAddress, ", Zip: ").concat(this.fromZipCode, ", To: ").concat(this.toAddress, ", Zip: ").concat(this.toZipCode, ", Cost: $").concat(cost.toFixed(2));
+        return "Shipment with the ID ".concat(this.shipmentID, " will be picked up from ").concat(this.fromAddress, ", ").concat(this.fromZipCode, " and shipped to ").concat(this.toAddress, ", ").concat(this.toZipCode, "\nCost = $").concat(cost.toFixed(2));
     };
     return Shipment;
 }());

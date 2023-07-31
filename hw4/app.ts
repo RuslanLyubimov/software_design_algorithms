@@ -1,4 +1,3 @@
-// app.ts
 import { Client } from "./Client";
 
 const client = Client.getInstance();

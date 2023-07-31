@@ -1,5 +1,5 @@
-// Client.ts
 import { Shipment } from "./Step1";
+import { ShipmentDecorator } from "./Step4";
 
 export class Client {
   private static instance: Client;
@@ -25,7 +25,13 @@ export class Client {
   }
 
   public ship(shipment: Shipment): void {
-    const shipmentInfo = shipment.ship();
+    const isFragile = true;
+    const doNotLeave = true;
+    const returnReceiptRequested = true;
+
+    const decoratedShipment = new ShipmentDecorator(shipment, isFragile, doNotLeave, returnReceiptRequested);
+
+    const shipmentInfo = decoratedShipment.ship();
     console.log(shipmentInfo);
   }
 }

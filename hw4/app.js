@@ -1,6 +1,5 @@
 "use strict";
 exports.__esModule = true;
-// app.ts
 var Client_1 = require("./Client");
 var client = Client_1.Client.getInstance();
 var shipment1 = client.getShipment();
