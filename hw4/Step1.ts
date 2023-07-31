@@ -1,15 +1,23 @@
+import { Shipper, AirEastShipper, PacificParcelShipper, ChicagoSprintShipper } from "./Step2";
+
 export class Shipment {
-  public static shipmentIdCounter: number = 1;
+  private shipmentID: number;
+  private weight: number;
+  private fromAddress: string;
+  private fromZipCode: string;
+  private toAddress: string;
+  private toZipCode: string;
+  private shipper: Shipper;
 
-  public shipmentId: number;
-  public weight: number;
-  public fromAddress: string;
-  public fromZipCode: string;
-  public toAddress: string;
-  public toZipCode: string;
-
-  constructor(weight: number, fromAddress: string, fromZipCode: string, toAddress: string, toZipCode: string) {
-    this.shipmentId = Shipment.getShipmentID();
+  constructor(
+    shipmentID: number,
+    weight: number,
+    fromAddress: string,
+    fromZipCode: string,
+    toAddress: string,
+    toZipCode: string
+  ) {
+    this.shipmentID = shipmentID;
     this.weight = weight;
     this.fromAddress = fromAddress;
     this.fromZipCode = fromZipCode;
@@ -17,52 +25,43 @@ export class Shipment {
     this.toZipCode = toZipCode;
   }
 
-  private static getShipmentID(): number {
-    return Shipment.shipmentIdCounter++;
+  private selectShipper(fromZipCode: string): void {
+    const firstDigit = Number(fromZipCode[0]);
+
+    if (firstDigit >= 1 && firstDigit <= 3) {
+      this.shipper = new AirEastShipper();
+    } else if (firstDigit >= 4 && firstDigit <= 6) {
+      this.shipper = new ChicagoSprintShipper();
+    } else {
+      this.shipper = new PacificParcelShipper();
+    }
+  }
+
+  public updateShipmentInfo(
+    shipmentID: number,
+    weight: number,
+    fromAddress: string,
+    fromZipCode: string,
+    toAddress: string,
+    toZipCode: string
+  ): void {
+    this.shipmentID = shipmentID;
+    this.weight = weight;
+    this.fromAddress = fromAddress;
+    this.fromZipCode = fromZipCode;
+    this.toAddress = toAddress;
+    this.toZipCode = toZipCode;
+  }
+
+  public getShipmentID(): number {
+    return this.shipmentID;
   }
 
   public ship(): string {
-    const cost = this.weight * 0.39; // 39 cents per ounce
-    return `Shipment ID: ${this.shipmentId}, From: ${this.fromAddress}, ${this.fromZipCode}, To: ${this.toAddress}, ${
-      this.toZipCode
-    }, Cost: $${cost.toFixed(2)}`;
+    this.selectShipper(this.fromZipCode);
+    const cost = this.shipper.getCost(this.weight);
+    return `Shipment ID: ${this.shipmentID}, From: ${this.fromAddress}, Zip: ${this.fromZipCode}, To: ${
+      this.toAddress
+    }, Zip: ${this.toZipCode}, Cost: $${cost.toFixed(2)}`;
   }
 }
-
-export class Client {
-  private shipment: Shipment;
-
-  public getInstance(): Shipment {
-    if (!this.shipment) {
-      this.shipment = new Shipment(0, "", "", "", "");
-    }
-    return this.shipment;
-  }
-}
-
-export class FrontEndMock {
-  public static getUserInput(): any {
-    return {
-      ShipmentID: 0,
-      Weight: 16,
-      FromAddress: "123 Main St, CityA, StateA",
-      FromZipCode: "12345",
-      ToAddress: "456 Elm St, CityB, StateB",
-      ToZipCode: "67890",
-    };
-  }
-}
-
-const client = new Client();
-const shipment = client.getInstance();
-const userInput = FrontEndMock.getUserInput();
-
-shipment.shipmentId = userInput.ShipmentID;
-shipment.weight = userInput.Weight;
-shipment.fromAddress = userInput.FromAddress;
-shipment.fromZipCode = userInput.FromZipCode;
-shipment.toAddress = userInput.ToAddress;
-shipment.toZipCode = userInput.ToZipCode;
-
-const result = shipment.ship();
-console.log(result);
