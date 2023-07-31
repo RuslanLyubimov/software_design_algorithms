@@ -1,4 +1,5 @@
 import { Shipper, AirEastShipper, PacificParcelShipper, ChicagoSprintShipper } from "./Step2";
+import { ShipmentItem, Letter, Package, Oversize } from "./Step3";
 
 export class Shipment {
   private shipmentID: number;
@@ -8,6 +9,7 @@ export class Shipment {
   private toAddress: string;
   private toZipCode: string;
   private shipper: Shipper;
+  private shipmentItem: ShipmentItem;
 
   constructor(
     shipmentID: number,
@@ -45,6 +47,14 @@ export class Shipment {
     toAddress: string,
     toZipCode: string
   ): void {
+    if (weight <= 15) {
+      this.shipmentItem = new Letter(weight);
+    } else if (weight <= 160) {
+      this.shipmentItem = new Package(weight);
+    } else {
+      this.shipmentItem = new Oversize(weight);
+    }
+
     this.shipmentID = shipmentID;
     this.weight = weight;
     this.fromAddress = fromAddress;
@@ -59,7 +69,7 @@ export class Shipment {
 
   public ship(): string {
     this.selectShipper(this.fromZipCode);
-    const cost = this.shipper.getCost(this.weight);
+    const cost = this.shipmentItem.getCost();
     return `Shipment ID: ${this.shipmentID}, From: ${this.fromAddress}, Zip: ${this.fromZipCode}, To: ${
       this.toAddress
     }, Zip: ${this.toZipCode}, Cost: $${cost.toFixed(2)}`;
